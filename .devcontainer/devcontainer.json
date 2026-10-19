@@ -1,0 +1,25 @@
+// .devcontainer/devcontainer.json
+
+{
+	"name": "Forex News Ingestion Dev",
+	"dockerComposeFile": ["../docker-compose.yml"],
+	"service": "app",
+	"workspaceFolder": "/app",
+	"shutdownAction": "stopCompose",
+	"remoteUser": "node",
+	"postCreateCommand": "npm install",
+	"forwardPorts": [1008],
+	"overrideCommand": true,
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"mongodb.mongodb-vscode"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash"
+			}
+		}
+	}
+}

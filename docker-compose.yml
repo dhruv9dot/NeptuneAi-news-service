@@ -1,0 +1,61 @@
+# docker-compose.yml
+
+services:
+    mongodb:
+        image: mongo:7.0
+        container_name: news-mongodb
+        restart: unless-stopped
+        env_file: .env
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+            MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+            MONGO_APP_USER: ${MONGO_APP_USER}
+            MONGO_APP_PASSWORD: ${MONGO_APP_PASSWORD}
+        volumes:
+            - mongodb_data:/data/db
+            - ./mongo-init:/docker-entrypoint-initdb.d:ro
+        ports:
+            - "27017:27017"
+        networks:
+            - news-network
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "mongosh",
+                    "--quiet",
+                    "--eval",
+                    "db.adminCommand('ping').ok",
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 15s
+
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: news-app
+        env_file: .env
+        environment:
+            MONGO_URI: mongodb://${MONGO_APP_USER}:${MONGO_APP_PASSWORD}@mongodb:27017/${MONGO_DB_NAME}?authSource=${MONGO_DB_NAME}
+        depends_on:
+            mongodb:
+                condition: service_healthy
+        volumes:
+            - .:/app:cached
+            - app_node_modules:/app/node_modules
+        ports:
+            - "${PORT:-1008}:1008"
+        networks:
+            - news-network
+
+volumes:
+    mongodb_data:
+    app_node_modules:
+
+networks:
+    news-network:
+        driver: bridge

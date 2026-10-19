@@ -1,0 +1,18 @@
+{
+	"name": "news-analysis",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "nodemon src/index.js",
+		"start": "node src/index.js"
+	},
+	"keywords": [],
+	"type": "module",
+	"dependencies": {
+		"dotenv": "^18.0.7",
+		"express": "^5.3.0",
+		"mongodb": "^7.7.0",
+		"newsdata-nodejs-client": "^0.2.1"
+	}
+}
